@@ -8,14 +8,22 @@ const con = mysql.createConnection({
     database: process.env.DB_DATABASE || dbcreds.DB_DATABASE
 });
 
-function addTransaction(amount,desc){
-    var mysql = `INSERT INTO \`transactions\` (\`amount\`, \`description\`) VALUES ('${amount}','${desc}')`;
-    con.query(mysql, function(err,result){
-        if (err) throw err;
-        //console.log("Adding to the table should have worked");
-    }) 
-    return 200;
+function addTransaction(amount, desc) {
+    if (!amount || isNaN(Number(amount))) {
+        console.error("Invalid or empty amount provided.");
+        return { error: "Invalid or empty amount provided." };
+    }
+    var sql = `INSERT INTO \`transactions\` (\`amount\`, \`description\`) VALUES ('${amount}', '${desc}')`;
+    con.query(sql, function(err, result) {
+        if (err) {
+            console.error("Error adding transaction:", err.message);
+            return { error: err.message };
+        }
+        console.log("Transaction added successfully.");
+    });
+    return 200; // Consider changing to proper async handling or callback pattern
 }
+
 
 function getAllTransactions(callback){
     var mysql = "SELECT * FROM transactions";
