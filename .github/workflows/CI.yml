@@ -39,14 +39,14 @@ jobs:
         id: secrets
         uses: hashicorp/vault-action@v2
         with:
-          url: https://vault.rdevopsb79.online:8200
+          url: https://54.89.106.149:8200
           token: ${{ secrets.VAULT_TOKEN }}
           tlsSkipVerify: true
           secrets: |
             infra-secrets/data/sonarqube password | sonarqube_password ;
       - uses: actions/checkout@v4
       - name: Start code quality
-        run: /sonar-scanner/sonar-scanner-6.1.0.4477-linux-x64/bin/sonar-scanner  -Dsonar.host.url=http://sonarqube-internal.vikramdevops.tech:9000 -Dsonar.login=admin -Dsonar.password=${{ env.sonarqube_password }} -Dsonar.projectKey=expense-backend -Dsonar.qualitygate.wait=true
+        run: /sonar-scanner/sonar-scanner-6.1.0.4477-linux-x64/bin/sonar-scanner  -Dsonar.host.url=http://sonarqube-internal.vikramdevops.tech:9000 -Dsonar.login=admin -Dsonar.password=${{ env.password }} -Dsonar.projectKey=expense-backend -Dsonar.qualitygate.wait=true
 
   security-checks:
     runs-on: self-hosted
