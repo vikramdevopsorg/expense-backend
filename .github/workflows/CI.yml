@@ -1,0 +1,108 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: sleep 1
+
+  unit-tests:
+    runs-on: self-hosted
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run unit tests
+        run: echo Unit Tests
+
+  integration-tests:
+    runs-on: self-hosted
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run integration-tests
+        run: echo integration-tests
+
+  code-quality:
+    runs-on: self-hosted
+    needs: [build]
+    steps:
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2
+        with:
+          url: https://vault.rdevopsb79.online:8200
+          token: ${{ secrets.VAULT_TOKEN }}
+          tlsSkipVerify: true
+          secrets: |
+            infra-secrets/data/sonarqube password | sonarqube_password ;
+      - uses: actions/checkout@v4
+      - name: Start code quality
+        run: /sonar-scanner/sonar-scanner-6.1.0.4477-linux-x64/bin/sonar-scanner  -Dsonar.host.url=http://sonarqube-internal.vikramdevops.tech:9000 -Dsonar.login=admin -Dsonar.password=${{ env.sonarqube_password }} -Dsonar.projectKey=expense-backend -Dsonar.qualitygate.wait=true
+
+  security-checks:
+    runs-on: self-hosted
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run a one-line script
+        run: echo Hello, world!
+
+  deploy-to-dev:
+    runs-on: self-hosted
+    needs: [security-checks, code-quality, integration-tests, unit-tests]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run a one-line script
+        run: echo Hello, world!
+
+  deploy-to-qa:
+    runs-on: self-hosted
+    needs: [deploy-to-dev]
+    environment: qa
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run a one-line script
+        run: echo Hello, world!
+
+  functional-tests:
+    runs-on: self-hosted
+    needs: [deploy-to-qa]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run a one-line script
+        run: echo Hello, world!
+
+  e2e-tests:
+    runs-on: self-hosted
+    needs: [deploy-to-qa]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run a one-line script
+        run: echo Hello, world!
+
+  deploy-to-stage:
+    runs-on: self-hosted
+    needs: [e2e-tests, functional-tests]
+    environment: stage
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run a one-line script
+        run: echo Hello, world!
+
+  deploy-to-prod:
+    runs-on: self-hosted
+    needs: [deploy-to-stage]
+    environment: prod
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run a one-line script
+        run: echo Hello, world!
