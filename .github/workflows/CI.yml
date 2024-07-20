@@ -53,8 +53,23 @@ jobs:
     needs: [build]
     steps:
       - uses: actions/checkout@v4
-      - name: Run a one-line script
+      - name: CheckMarx SCA
         run: echo Hello, world!
+      - name: CheckMarx SAST
+        run: echo Hello, world!
+        # SHA is added for each commit separate version it will handle
+        # need to login with ecr and push the docker image
+  docker-build:
+    runs-on: self-hosted
+    needs: [security-checks, code-quality, integration-tests, unit-tests]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Docker Build
+        run: |
+          env
+          docker build -t 637423416520.dkr.ecr.us-east-1.amazonaws.com/backend:${GITHUB_SHA} .
+          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 637423416520.dkr.ecr.us-east-1.amazonaws.com
+          docker push 637423416520.dkr.ecr.us-east-1.amazonaws.com/backend:${GITHUB_SHA}
 
   deploy-to-dev:
     runs-on: self-hosted
