@@ -59,6 +59,9 @@ jobs:
         run: echo Hello, world!
         # SHA is added for each commit separate version it will handle
         # need to login with ecr and push the docker image
+        # to deploy to dev env we need to use argocd commands
+        # here CI-server doesn't have previligies only work station provisioned the resource kubectl should add describe cluster and eks should allow this ci-server also
+
   docker-build:
     runs-on: self-hosted
     needs: [security-checks, code-quality, integration-tests, unit-tests]
