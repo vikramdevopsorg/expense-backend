@@ -56,7 +56,7 @@ jobs:
       - name: CheckMarx SCA
         run: echo Hello, world!
       - name: CheckMarx SAST
-        run: echo Hello, world!
+        run: echo Hello, world123!
         # SHA is added for each commit separate version it will handle
         # need to login with ecr and push the docker image
         # to deploy to dev env we need to use argocd commands
