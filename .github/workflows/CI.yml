@@ -39,7 +39,7 @@ jobs:
         id: secrets
         uses: hashicorp/vault-action@v2
         with:
-          url: https://54.89.106.149:8200
+          url: https://vault.vikramdevops.store:8200
           token: ${{ secrets.VAULT_TOKEN }}
           tlsSkipVerify: true
           secrets: |
